@@ -5,7 +5,6 @@ import subprocess
 from PyQt5 import QtWidgets
 import moz_commands as moz
 
-
 class Ui_MainWindow(object):
 
     def setupUi(self, MainWindow):
@@ -15,47 +14,55 @@ class Ui_MainWindow(object):
         self.is_moz_on = False
         dct = moz.status()
 
-        self.centralwidget = QtWidgets.QTabWidget(MainWindow)
-        self.centralwidget.setObjectName("centralwidget")
-        MainWindow.setCentralWidget(self.centralwidget)
+        tabWdg = QtWidgets.QTabWidget(MainWindow)
+        tabWdg.setObjectName("centralwidget")
+        MainWindow.setCentralWidget(tabWdg)
 
-        tab1 = QtWidgets.QWidget()
-        self.centralwidget.addTab(tab1, 'Server')
+        # Server tab
+        server_tab = QtWidgets.QWidget()
+        tabWdg.addTab(server_tab, 'Server')
 
         box = QtWidgets.QVBoxLayout()
 
         self.start_btn = QtWidgets.QPushButton('Start')
-        self.start_btn.clicked.connect(self.toogle_moz)
-        self.choose_server_btn = ChooseServerBtn(tab1)
+        self.choose_server_btn = ChooseServerBtn(server_tab)
         ip_wdg = IPStatus()
         server_status = StatusWdg(dct, 'Server')
-        self.choose_server_btn.connect(server_status.update)
-        self.choose_server_btn.connect(ip_wdg.update)
 
         box.addWidget(self.choose_server_btn)
         box.addWidget(self.start_btn)
         box.addWidget(server_status)
         box.addWidget(ip_wdg)
         box.addStretch()
-        tab1.setLayout(box)
+        server_tab.setLayout(box)
 
-        tab2 = QtWidgets.QWidget()
-        self.centralwidget.addTab(tab2, 'User')
+        self.start_btn.clicked.connect(self.toogle_moz)
+        self.choose_server_btn.connect(server_status.update)
+        self.choose_server_btn.connect(ip_wdg.update)
+
+        # User tab
+        user_tab = QtWidgets.QWidget()
+        tabWdg.addTab(user_tab, 'User')
+
         box = QtWidgets.QVBoxLayout()
         user_status = StatusWdg(dct, 'User')
         self.choose_server_btn.connect(user_status.update)
+
         box.addWidget(user_status)
         box.addStretch()
-        tab2.setLayout(box)
+        user_tab.setLayout(box)
 
-        tab3 = QtWidgets.QWidget()
-        self.centralwidget.addTab(tab3, 'Devices')
+        # Device tab
+        device_tab = QtWidgets.QWidget()
+        tabWdg.addTab(device_tab, 'Devices')
+
         box = QtWidgets.QVBoxLayout()
         device_status = DeviceStatusWdg(dct)
         self.choose_server_btn.connect(device_status.update)
+
         box.addWidget(device_status)
         box.addStretch()
-        tab3.setLayout(box)
+        device_tab.setLayout(box)
 
     def toogle_moz(self):
 
@@ -134,6 +141,7 @@ class StatusWdg(QtWidgets.QFrame):
 
             self.dct[label].setText(dct[label])
 
+
 class DeviceStatusWdg(QtWidgets.QFrame):
     labels = ['Active devices', 'Current devices', 'Devices']
 
@@ -157,6 +165,7 @@ class DeviceStatusWdg(QtWidgets.QFrame):
         for label in DeviceStatusWdg.labels:
 
             self.dct[label].setText(dct[label])
+
 
 class IPStatus(QtWidgets.QFrame):
 
